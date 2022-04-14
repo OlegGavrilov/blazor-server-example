@@ -1,0 +1,76 @@
+﻿@page "/fetchdata"
+@attribute [Authorize(Roles = UserAccountRoles.ADMIN)]
+
+<PageTitle>Users and posts</PageTitle>
+
+@using BlazorApp1.Authentication
+@using System.Text.Json
+@using System.Text.Json.Serialization;
+@using BlazorApp1.Services
+@inject IHttpClientFactory ClientFactory
+@inject DummyApiService dummyApiService
+
+<div class="row">
+    <div class="col">
+        <h2>Users</h2>
+
+        @if(usersRoot.IsLoading)
+        {
+            <p>Loading...</p>
+        } 
+        else if (usersRoot.ErrorMessage != null)
+        {
+            <p>@usersRoot.ErrorMessage</p>    
+        }
+        else if(usersRoot.Value != null)
+        {                
+            <div class="list-group">
+                @foreach (var user in usersRoot.Value.data)
+                {
+                    <a @onclick="() => SelectUser(user)" href="javascript:void(0)" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                        <img src="@user.picture" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+                        <div class="d-flex gap-2 w-100 justify-content-between">
+                            <div>
+                                <h6 class="mb-0">@user.firstName @user.lastName</h6>
+                                <p class="mb-0 opacity-75">@user.id</p>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+    <div class="col">
+        <h2>Posts</h2>
+
+        @if(postsRoot.IsLoading)
+        {
+            <p>Loading...</p>
+        } 
+        else if (postsRoot.ErrorMessage != null)
+        {
+            <p>@postsRoot.ErrorMessage</p>    
+        }
+        else if(postsRoot.Value != null && postsRoot.Value.data.Count != 0)
+        {
+            <div class="list-group">
+                @foreach (var post in postsRoot.Value.data)
+                {
+                    <div class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                        <img src="@post.image" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+                        <div class="d-flex gap-2 w-100 justify-content-between">
+                            <div>
+                                <h6 class="mb-0">@post.text</h6>
+                                <p class="mb-0 opacity-75">@post.publishDate</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        } else {
+            <p>Please, select user.</p>
+        }
+    </div>
+</div>
+
+
